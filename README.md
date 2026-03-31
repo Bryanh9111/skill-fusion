@@ -10,7 +10,7 @@
 
 ### 问题
 
-[gstack](https://github.com/gstack-dev/gstack) 和 [superpowers](https://github.com/superpowers-ai/superpowers) 是目前 Claude Code 生态中最流行的两套 skill 框架。很多人同时安装了两者，但它们有 **7 个能力重叠**，会在同一个会话中争夺控制权：
+[gstack](https://github.com/garrytan/gstack) 和 [superpowers](https://github.com/obra/superpowers-marketplace) 是目前 Claude Code 生态中最流行的两套 skill 框架。很多人同时安装了两者，但它们有 **7 个能力重叠**，会在同一个会话中争夺控制权：
 
 | 能力 | gstack | superpowers |
 |---|---|---|
@@ -87,8 +87,8 @@
 
 ### 前提
 
-- 已安装 [gstack](https://github.com/gstack-dev/gstack)（`~/.claude/skills/gstack/`）
-- 已启用 [superpowers](https://github.com/superpowers-ai/superpowers)（`settings.json` 中 `superpowers@superpowers-marketplace: true`）
+- 已安装 [gstack](https://github.com/garrytan/gstack)（`~/.claude/skills/gstack/`）
+- 已启用 [superpowers](https://github.com/obra/superpowers-marketplace)（`settings.json` 中 `superpowers@superpowers-marketplace: true`）
 
 ---
 
@@ -96,7 +96,7 @@
 
 ### Problem
 
-[gstack](https://github.com/gstack-dev/gstack) and [superpowers](https://github.com/superpowers-ai/superpowers) are the two most popular skill frameworks in the Claude Code ecosystem. Many users install both, but they have **7 overlapping capabilities** that compete for control in the same session.
+[gstack](https://github.com/garrytan/gstack) and [superpowers](https://github.com/obra/superpowers-marketplace) are the two most popular skill frameworks in the Claude Code ecosystem. Many users install both, but they have **7 overlapping capabilities** that compete for control in the same session.
 
 Default behavior: both skill sets load fully, the model picks randomly, results are unpredictable.
 
@@ -158,8 +158,8 @@ Copy the contents of [`claude-md-snippet.md`](./claude-md-snippet.md) into your 
 
 ### Prerequisites
 
-- [gstack](https://github.com/gstack-dev/gstack) installed at `~/.claude/skills/gstack/`
-- [superpowers](https://github.com/superpowers-ai/superpowers) enabled in `settings.json`
+- [gstack](https://github.com/garrytan/gstack) installed at `~/.claude/skills/gstack/`
+- [superpowers](https://github.com/obra/superpowers-marketplace) enabled in `settings.json`
 
 ---
 
