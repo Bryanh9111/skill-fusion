@@ -1,6 +1,6 @@
-# Skill Fusion: gstack + superpowers + octopus
+# Skill Fusion: gstack + superpowers + octopus + token-efficient
 
-> 三套框架不是平级并存，而是分层协作。gstack 做骨架，superpowers 做纪律，octopus 做升级。
+> 四层架构，不是四套工具。gstack 做骨架，superpowers 做纪律，octopus 做升级，token-efficient 做压缩。
 
 [English](#english) | [中文](#中文)
 
@@ -10,21 +10,46 @@
 
 ### 问题
 
-[gstack](https://github.com/garrytan/gstack)、[superpowers](https://github.com/obra/superpowers-marketplace) 和 [claude-octopus](https://github.com/nyldn/claude-octopus) 是 Claude Code 生态中最强的三套 skill 框架。同时安装后，它们在 **11 个能力域** 存在重叠，会在同一个会话中争夺控制权。
+[gstack](https://github.com/garrytan/gstack)、[superpowers](https://github.com/obra/superpowers-marketplace)、[claude-octopus](https://github.com/nyldn/claude-octopus) 和 [claude-token-efficient](https://github.com/drona23/claude-token-efficient) 是 Claude Code 生态中最强的几套增强框架。同时安装后，前三套在 **11 个能力域** 存在重叠，会在同一个会话中争夺控制权；而 token-efficient 的规则如果不与现有 CLAUDE.md 整合，会产生冗余或冲突。
 
-默认行为：三套 skill 全量加载，模型随机选择，结果不可预测，高成本 skill 可能被无谓调用。
+默认行为：全量加载，模型随机选择，结果不可预测，高成本 skill 可能被无谓调用，输出冗长浪费 token。
 
 ### 方案
 
-**统一控制平面：意图 + 风险路由，三级 escalation。**
+**统一控制平面：四层架构 + 意图风险路由 + 三级 escalation。**
 
-分析三者各自的强项后，我们找到了清晰的分层模式：
+分析各自强项后，我们找到了清晰的分层模式：
 
 - **gstack** = 默认路由与工作流骨架（决策入口 + 审查 + 交付）
 - **superpowers** = 全局纪律与执行策略层（行为约束，不是工具）
 - **octopus** = 升级层与专项能力（多模型共识 / 辩论 / 深度研究 / 文档产出）
+- **token-efficient** = 输出压缩层（全局被动约束，减少约 63% 冗余 token）
 
-核心机制：**默认单路快跑 → 失败后升级 → 分歧大时进入对抗。** 硬路由，不靠模型自觉。
+核心机制：**默认单路快跑 → 失败后升级 → 分歧大时进入对抗 → 所有输出经过 token 压缩。** 硬路由，不靠模型自觉。
+
+### token-efficient 融合策略
+
+[claude-token-efficient](https://github.com/drona23/claude-token-efficient) 不是 skill 框架，不参与路由或 escalation。它是一组**输出行为约束**，通过合并到 CLAUDE.md 的现有段落来生效，而不是作为独立文件叠加。
+
+**为什么合并而不是叠加？**
+- 独立 CLAUDE.md 文件会增加每条消息的 input token（文件本身约 500-1000 token）
+- 它的 8 条核心规则与现有 CLAUDE.md 高度重叠（sycophancy 禁令、terse output、read-before-write 等）
+- 合并后消除冗余，净 token 节约更高
+
+**融合映射 — 8 条规则的去向：**
+
+| token-efficient 规则 | 融入 CLAUDE.md 段落 | 说明 |
+|---|---|---|
+| Think first, read before writing | `<context_gathering>` | 已有"Prefer acting over more searching"，补充"read files before editing" |
+| Keep output concise | Communication: "stay terse" | 已有，原文保留 |
+| Prefer targeted edits over full rewrites | Code Editing Rules | 已有"favor simple, modular solutions" |
+| Read each file once unless changed | Communication: "Don't re-read files" | 已有，原文保留 |
+| Run tests before finishing | `<self_reflection>` + verification step | 已有 ≥90% coverage 要求 |
+| No flattering preamble/closing fluff | Communication: "No sycophancy" | 已有，原文保留 |
+| Favor simple direct fixes | Priority #1: KISS/YAGNI | 已有，核心原则 |
+| User instructions always override | Priority stack rule #1 | 已有，最高优先级 |
+
+**结论：** 8 条规则中 **0 条需要新增**，全部已被现有 CLAUDE.md 覆盖。token-efficient 的价值在于验证了这些规则的有效性（benchmark 显示 63% token 减少），而非引入新规则。
 
 ### 三级 Escalation 架构
 
@@ -173,6 +198,18 @@ L3 (premium)  → octopus debate/embrace，对抗性辩论
 - 已安装 [gstack](https://github.com/garrytan/gstack)（`~/.claude/skills/gstack/`）
 - 已启用 [superpowers](https://github.com/obra/superpowers-marketplace)（`settings.json` 中 `superpowers@superpowers-marketplace: true`）
 - 已安装 [claude-octopus](https://github.com/nyldn/claude-octopus)（`claude plugin install octo@nyldn-plugins`）
+- [claude-token-efficient](https://github.com/drona23/claude-token-efficient) 的规则已合并到 CLAUDE.md（不需要单独安装）
+
+### 相关框架
+
+先安装以下框架，再用本 repo 的融合规则进行整合：
+
+| 框架 | 仓库 | 安装方式 | 角色 |
+|---|---|---|---|
+| **gstack** | [garrytan/gstack](https://github.com/garrytan/gstack) | Claude Code skill | 工作流骨架 |
+| **superpowers** | [obra/superpowers-marketplace](https://github.com/obra/superpowers-marketplace) | Claude Code plugin | 执行纪律 |
+| **claude-octopus** | [nyldn/claude-octopus](https://github.com/nyldn/claude-octopus) | Claude Code plugin | 多 AI 升级 |
+| **claude-token-efficient** | [drona23/claude-token-efficient](https://github.com/drona23/claude-token-efficient) | 合并到 CLAUDE.md | 输出压缩 |
 
 ---
 
@@ -180,21 +217,46 @@ L3 (premium)  → octopus debate/embrace，对抗性辩论
 
 ### Problem
 
-[gstack](https://github.com/garrytan/gstack), [superpowers](https://github.com/obra/superpowers-marketplace), and [claude-octopus](https://github.com/nyldn/claude-octopus) are the three most powerful skill frameworks in the Claude Code ecosystem. When installed together, they have **11 overlapping capability domains** that compete for control in the same session.
+[gstack](https://github.com/garrytan/gstack), [superpowers](https://github.com/obra/superpowers-marketplace), [claude-octopus](https://github.com/nyldn/claude-octopus), and [claude-token-efficient](https://github.com/drona23/claude-token-efficient) are among the most powerful enhancement frameworks in the Claude Code ecosystem. When installed together, the first three have **11 overlapping capability domains** that compete for control; token-efficient's rules can create redundancy if not merged with existing CLAUDE.md constraints.
 
-Default behavior: all three skill sets load fully, the model picks randomly, results are unpredictable, and expensive multi-AI skills may fire unnecessarily.
+Default behavior: all skill sets load fully, the model picks randomly, results are unpredictable, expensive multi-AI skills may fire unnecessarily, and verbose output wastes tokens.
 
 ### Solution
 
-**Unified control plane: intent + risk routing with three-level escalation.**
+**Unified control plane: four-layer architecture + intent/risk routing + three-level escalation.**
 
 After analyzing each framework's strengths:
 
 - **gstack** = default router and workflow backbone (decision entry + review + delivery)
 - **superpowers** = global discipline and execution policy layer (behavioral constraints, not tools)
 - **octopus** = escalation layer and specialty engine (multi-model consensus / debate / deep research / document generation)
+- **token-efficient** = output compression layer (passive global constraint, ~63% token reduction)
 
-Core mechanism: **fast single-model default → escalate on failure → adversarial debate on high disagreement.** Hard routing, not model discretion.
+Core mechanism: **fast single-model default → escalate on failure → adversarial debate on high disagreement → all output compressed.** Hard routing, not model discretion.
+
+### token-efficient Integration Strategy
+
+[claude-token-efficient](https://github.com/drona23/claude-token-efficient) is not a skill framework -- it does not participate in routing or escalation. It is a set of **output behavioral constraints** that are merged into existing CLAUDE.md sections rather than added as a separate file.
+
+**Why merge instead of stack?**
+- A standalone CLAUDE.md file adds ~500-1000 input tokens per message
+- Its 8 core rules overlap heavily with existing CLAUDE.md (sycophancy ban, terse output, read-before-write, etc.)
+- Merging eliminates redundancy and maximizes net token savings
+
+**Fusion mapping -- where the 8 rules land:**
+
+| token-efficient rule | Merged into CLAUDE.md section | Status |
+|---|---|---|
+| Think first, read before writing | `<context_gathering>` | Already covered |
+| Keep output concise | Communication: "stay terse" | Already covered |
+| Prefer targeted edits over full rewrites | Code Editing Rules | Already covered |
+| Read each file once unless changed | Communication: "Don't re-read files" | Already covered |
+| Run tests before finishing | `<self_reflection>` + verification step | Already covered |
+| No flattering preamble/closing fluff | Communication: "No sycophancy" | Already covered |
+| Favor simple direct fixes | Priority #1: KISS/YAGNI | Already covered |
+| User instructions always override | Priority stack rule #1 | Already covered |
+
+**Conclusion:** All 8 rules are already covered by the existing CLAUDE.md. token-efficient's value is validating these rules work (benchmarked at 63% token reduction), not introducing new ones.
 
 ### Three-Level Escalation Architecture
 
@@ -336,6 +398,20 @@ Copy the contents of [`claude-md-snippet.md`](./claude-md-snippet.md) into your 
 - [gstack](https://github.com/garrytan/gstack) installed at `~/.claude/skills/gstack/`
 - [superpowers](https://github.com/obra/superpowers-marketplace) enabled in `settings.json`
 - [claude-octopus](https://github.com/nyldn/claude-octopus) installed via `claude plugin install octo@nyldn-plugins`
+- [claude-token-efficient](https://github.com/drona23/claude-token-efficient) rules merged into CLAUDE.md (no separate install needed)
+
+---
+
+## Referenced Frameworks
+
+Install these first, then use this repo's fusion rules to integrate them:
+
+| Framework | Repo | Install Method | Role |
+|---|---|---|---|
+| **gstack** | [garrytan/gstack](https://github.com/garrytan/gstack) | Claude Code skill | Workflow backbone |
+| **superpowers** | [obra/superpowers-marketplace](https://github.com/obra/superpowers-marketplace) | Claude Code plugin | Execution discipline |
+| **claude-octopus** | [nyldn/claude-octopus](https://github.com/nyldn/claude-octopus) | Claude Code plugin | Multi-AI escalation |
+| **claude-token-efficient** | [drona23/claude-token-efficient](https://github.com/drona23/claude-token-efficient) | Merge into CLAUDE.md | Output compression |
 
 ---
 
